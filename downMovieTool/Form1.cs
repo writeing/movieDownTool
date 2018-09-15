@@ -350,7 +350,6 @@ namespace downMovieTool
 
             }       
             return rpyList;
-
         }
       
         private void button2_Click(object sender, EventArgs e)
@@ -475,7 +474,7 @@ namespace downMovieTool
 
             string urltitle = System.Web.HttpUtility.UrlEncode(g_currentMovieInfo.title, Encoding.GetEncoding("gbk"));           
             _getMovieJsonInDouban(urltitle, "getMovie_dytt.py");
-            
+            //todo:对接收到的数据做拆分
             //urltitle = System.Web.HttpUtility.UrlEncode(g_currentMovieInfo.title, Encoding.GetEncoding("utf-8"));
             //_getMovieJsonInDouban(urltitle, "getMovie_qj.py");
         }
