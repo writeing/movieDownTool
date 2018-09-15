@@ -35,6 +35,7 @@
             this.退出ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.操作ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.设置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.listView1 = new System.Windows.Forms.ListView();
             this.label1 = new System.Windows.Forms.Label();
@@ -67,11 +68,17 @@
             this.tbMovieName = new System.Windows.Forms.TextBox();
             this.progressBar2 = new System.Windows.Forms.ProgressBar();
             this.button3 = new System.Windows.Forms.Button();
+            this.cmbDownLink = new System.Windows.Forms.ComboBox();
+            this.button5 = new System.Windows.Forms.Button();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.button6 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -97,19 +104,21 @@
             // 打开文件ToolStripMenuItem
             // 
             this.打开文件ToolStripMenuItem.Name = "打开文件ToolStripMenuItem";
-            this.打开文件ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.打开文件ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.打开文件ToolStripMenuItem.Text = "打开文件";
+            this.打开文件ToolStripMenuItem.Click += new System.EventHandler(this.打开文件ToolStripMenuItem_Click);
             // 
             // 退出ToolStripMenuItem
             // 
             this.退出ToolStripMenuItem.Name = "退出ToolStripMenuItem";
-            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.退出ToolStripMenuItem.Text = "退出";
             // 
             // 操作ToolStripMenuItem
             // 
             this.操作ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.设置ToolStripMenuItem});
+            this.设置ToolStripMenuItem,
+            this.updateToolStripMenuItem});
             this.操作ToolStripMenuItem.Name = "操作ToolStripMenuItem";
             this.操作ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
             this.操作ToolStripMenuItem.Text = "操作";
@@ -117,8 +126,16 @@
             // 设置ToolStripMenuItem
             // 
             this.设置ToolStripMenuItem.Name = "设置ToolStripMenuItem";
-            this.设置ToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
-            this.设置ToolStripMenuItem.Text = "设置";
+            this.设置ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.设置ToolStripMenuItem.Text = "setDownApp";
+            this.设置ToolStripMenuItem.Click += new System.EventHandler(this.设置ToolStripMenuItem_Click);
+            // 
+            // updateToolStripMenuItem
+            // 
+            this.updateToolStripMenuItem.Name = "updateToolStripMenuItem";
+            this.updateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.updateToolStripMenuItem.Text = "update";
+            this.updateToolStripMenuItem.Click += new System.EventHandler(this.updateToolStripMenuItem_Click);
             // 
             // panel1
             // 
@@ -370,7 +387,7 @@
             this.panel3.Controls.Add(this.tbzhuyan);
             this.panel3.Controls.Add(this.tbdaoyan);
             this.panel3.Controls.Add(this.label7);
-            this.panel3.Location = new System.Drawing.Point(13, 446);
+            this.panel3.Location = new System.Drawing.Point(12, 468);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(409, 112);
             this.panel3.TabIndex = 0;
@@ -382,7 +399,6 @@
             this.tbstat.Name = "tbstat";
             this.tbstat.Size = new System.Drawing.Size(159, 27);
             this.tbstat.TabIndex = 14;
-            this.tbstat.Text = "0";
             // 
             // label8
             // 
@@ -404,9 +420,10 @@
             // 
             this.richTextBox1.Location = new System.Drawing.Point(939, 29);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(297, 452);
+            this.richTextBox1.Size = new System.Drawing.Size(297, 411);
             this.richTextBox1.TabIndex = 3;
             this.richTextBox1.Text = "";
+            this.richTextBox1.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.richTextBox1_LinkClicked);
             // 
             // pictureBox1
             // 
@@ -419,17 +436,17 @@
             // button4
             // 
             this.button4.Font = new System.Drawing.Font("宋体", 25F);
-            this.button4.Location = new System.Drawing.Point(939, 487);
+            this.button4.Location = new System.Drawing.Point(939, 440);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(297, 76);
+            this.button4.Size = new System.Drawing.Size(297, 68);
             this.button4.TabIndex = 12;
-            this.button4.Text = "Down";
+            this.button4.Text = "Get(1)";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(465, 505);
+            this.progressBar1.Location = new System.Drawing.Point(465, 496);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(468, 53);
             this.progressBar1.TabIndex = 13;
@@ -475,11 +492,71 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click_1);
             // 
+            // cmbDownLink
+            // 
+            this.cmbDownLink.Font = new System.Drawing.Font("宋体", 13F);
+            this.cmbDownLink.FormattingEnabled = true;
+            this.cmbDownLink.Items.AddRange(new object[] {
+            "电影",
+            "电视剧",
+            "综艺",
+            "动画",
+            "纪录片",
+            "短片"});
+            this.cmbDownLink.Location = new System.Drawing.Point(465, 555);
+            this.cmbDownLink.Name = "cmbDownLink";
+            this.cmbDownLink.Size = new System.Drawing.Size(468, 25);
+            this.cmbDownLink.TabIndex = 18;
+            // 
+            // button5
+            // 
+            this.button5.Font = new System.Drawing.Font("宋体", 25F);
+            this.button5.Location = new System.Drawing.Point(939, 523);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(297, 62);
+            this.button5.TabIndex = 19;
+            this.button5.Text = "Down(2)";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.button6);
+            this.panel4.Location = new System.Drawing.Point(12, 587);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(450, 100);
+            this.panel4.TabIndex = 20;
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(10, 13);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(75, 23);
+            this.button6.TabIndex = 0;
+            this.button6.Text = "test";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // button7
+            // 
+            this.button7.Font = new System.Drawing.Font("宋体", 25F);
+            this.button7.Location = new System.Drawing.Point(939, 600);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(297, 62);
+            this.button7.TabIndex = 21;
+            this.button7.Text = "Down All";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1248, 570);
+            this.ClientSize = new System.Drawing.Size(1248, 717);
+            this.Controls.Add(this.button7);
+            this.Controls.Add(this.panel4);
+            this.Controls.Add(this.button5);
+            this.Controls.Add(this.cmbDownLink);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.tbMovieName);
@@ -492,9 +569,11 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.menuStrip1);
+            this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.menuStrip1.ResumeLayout(false);
@@ -505,6 +584,7 @@
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panel4.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -550,6 +630,12 @@
         private System.Windows.Forms.TextBox tbMovieName;
         private System.Windows.Forms.ProgressBar progressBar2;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.ComboBox cmbDownLink;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.ToolStripMenuItem updateToolStripMenuItem;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button7;
     }
 }
 

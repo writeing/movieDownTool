@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -21,6 +22,10 @@ namespace downMovieTool
         AutoCompleteStringCollection daoyansource = new AutoCompleteStringCollection();
         AutoCompleteStringCollection zhuyansource = new AutoCompleteStringCollection();
         AutoCompleteStringCollection dianyingsource = new AutoCompleteStringCollection();
+        List<moviedownLinkInfo> g_moviedownlinkinfo = new List<moviedownLinkInfo>();
+        public string g_sheetRpy = "";
+        public MovieSetInfo g_moviesetinfo = new MovieSetInfo();
+        formSet fs;
         public Form1()
         {
             InitializeComponent();
@@ -44,6 +49,7 @@ namespace downMovieTool
             tbMovieName.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             tbMovieName.AutoCompleteSource = AutoCompleteSource.CustomSource;
 
+            fs = new formSet(g_moviesetinfo.downToolFileName);
             //
         }
 
@@ -84,6 +90,18 @@ namespace downMovieTool
             tbzhuyan.AutoCompleteCustomSource = zhuyansource;
 
             tbMovieName.AutoCompleteCustomSource = dianyingsource;
+
+            try
+            {
+                //movieSet.txt
+                string revJsonData = File.ReadAllText("movieSet.txt");
+                g_moviesetinfo = JsonConvert.DeserializeObject<MovieSetInfo>(revJsonData);
+            }
+            catch (Exception)
+            {
+            }
+
+
         }
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -113,6 +131,50 @@ namespace downMovieTool
                     strloadJson = "";
                     readFileToShow("jsonMovie.json");
                 }
+                if (strloadJson.IndexOf("readfinish") > -1)
+                {
+                    shouMessage("movie info get finish\r\n");
+                    strloadJson = "";
+                    //initLoadJson();
+                    if (g_sheetRpy.Length > 0)
+                    {
+                        string data = g_sheetRpy;
+                        g_sheetRpy = "";
+                        int len = data.Length;                        
+                        try
+                        {
+                            JObject jaObj = (JObject)JsonConvert.DeserializeObject(data);
+                            var obj = JArray.Parse(jaObj["movie"].ToString());
+                            foreach(var ob in obj)
+                            {
+                                moviedownLinkInfo temp = new moviedownLinkInfo();
+                                temp.name = ob["name"].ToString();
+                                temp.link = ob["link"].ToString();
+                                //byte[] uni = Encoding.Unicode.GetBytes(temp.name);
+
+                                //temp.name = Encoding.ASCII.GetString(uni);
+                                g_moviedownlinkinfo.Add(temp);
+                            }                            
+                            foreach(var linkinfo in g_moviedownlinkinfo)
+                            {
+                                if(linkinfo.name == "showLink")
+                                {
+                                    shouMessage(linkinfo.link);
+                                }
+                                else
+                                {
+                                    cmbDownLink.Items.Add(linkinfo.name);
+                                }
+                                
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            shouMessage(data);                            
+                        }                       
+                    }
+                }
+                
             }
             catch (Exception)
             {                
@@ -132,12 +194,12 @@ namespace downMovieTool
             setProgressBar(0);
             shouMessage("");
             string getUrl = string.Format("https://movie.douban.com/j/new_search_subjects?sort=T&range={0},10&tags={1}&start=index&genres={2}&countries={3}", stat,urlshape,urlTyep,urlcountry);
-            string jsonIndex = _getMovieJsonInDouban(getUrl);
+            string jsonIndex = _getMovieJsonInDouban(getUrl, "getjsonbeurl.py");
             
             //ansy  jsondata to show
         }
         
-        private string _getMovieJsonInDouban(string url)
+        private string _getMovieJsonInDouban(string url,string filename)
         {
             ProcessStartInfo si = new ProcessStartInfo(@"python");
             si.WindowStyle = ProcessWindowStyle.Hidden;
@@ -145,12 +207,11 @@ namespace downMovieTool
             si.UseShellExecute = false;
             si.RedirectStandardOutput = true;
             
-            si.Arguments = " " + Environment.CurrentDirectory + "\\getjsonbeurl.py " + url;
-            shouMessage(si.Arguments);        
+            si.Arguments = " " + Environment.CurrentDirectory + "\\"+ filename +" " + url;
+           // shouMessage(si.Arguments);        
             Process pp = Process.Start(si);
             pp.OutputDataReceived += new DataReceivedEventHandler(pp_OutputDataReceived);
-            pp.BeginOutputReadLine();
-            shouMessage("wait get movie info for douban...\r\n");
+            pp.BeginOutputReadLine();            
             return strloadJson;
         }
         private void pp_OutputDataReceived(object sender, DataReceivedEventArgs e)
@@ -160,8 +221,22 @@ namespace downMovieTool
             if(e.Data!= null && e.Data.IndexOf("end") > -1)
             {
                 strloadJson = "end";
-            }
-            shouMessage(e.Data);
+                return;
+            }//readend
+            if (e.Data != null && e.Data == "none serach")
+            {
+                strloadJson = "readfinish";
+                return;
+            }//readend
+            if (e.Data != null && e.Data == "readfinish")
+            {
+                strloadJson = "readfinish";
+                return;
+            }//readend
+            if (e.Data != null)
+            {
+                g_sheetRpy += e.Data;
+            }            
         }
         private Image _getImageForRemmote(string url)
         {
@@ -395,8 +470,14 @@ namespace downMovieTool
         /// <param name="e"></param>
         private void button4_Click(object sender, EventArgs e)
         {
+            cmbDownLink.Items.Clear();
             shouMessage(g_currentMovieInfo.title);
 
+            string urltitle = System.Web.HttpUtility.UrlEncode(g_currentMovieInfo.title, Encoding.GetEncoding("gbk"));           
+            _getMovieJsonInDouban(urltitle, "getMovie_dytt.py");
+            
+            //urltitle = System.Web.HttpUtility.UrlEncode(g_currentMovieInfo.title, Encoding.GetEncoding("utf-8"));
+            //_getMovieJsonInDouban(urltitle, "getMovie_qj.py");
         }
         /// <summary>
         /// 通过电影名称，查找电影
@@ -415,11 +496,19 @@ namespace downMovieTool
                 }
             }
             _showListMovieImage(temp);
-            _showMovieInfo(temp[0]);
+            try
+            {
+                _showMovieInfo(temp[0]);
+            }
+            catch (Exception)
+            {                
+            }
+            
+            
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
-        {
+        {            
             if(e.KeyData == Keys.Enter)
             {
                 if(tbMovieName.Focused == true)
@@ -436,6 +525,75 @@ namespace downMovieTool
                 }
             }
         }
+
+        private void richTextBox1_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            Process.Start(e.LinkText);
+        }
+
+        private void 设置ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+            fs.ShowDialog();
+            g_moviesetinfo.downToolFileName = formSet.xunleiLink;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {            
+            string jsonData = JsonConvert.SerializeObject(g_moviesetinfo);
+            File.WriteAllText("movieSet.txt", jsonData);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if(g_moviesetinfo.downToolFileName == "")
+            {
+                fs.ShowDialog();
+                return;
+            }
+            int index = cmbDownLink.SelectedIndex;
+            _startXunleiDownMovie(g_moviesetinfo.downToolFileName,g_moviedownlinkinfo[index].link , MovieSetInfo.xunlei);
+        }
+        private void _startXunleiDownMovie(string filename, string args,string funcName)
+        {
+            ProcessStartInfo si = new ProcessStartInfo(filename + "\\" + funcName);
+            si.WindowStyle = ProcessWindowStyle.Hidden;
+            si.CreateNoWindow = true;
+            si.UseShellExecute = false;
+            si.RedirectStandardOutput = true;
+
+            si.Arguments = " " + args;
+            // shouMessage(si.Arguments);        
+            Process pp = Process.Start(si);                       
+        }
+
+        private void updateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _getMovieJsonInDouban("", "getjson.py");
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            shouMessage(System.Text.Encoding.Default.HeaderName.ToString());
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if (g_moviesetinfo.downToolFileName == "")
+            {
+                fs.ShowDialog();
+                return;
+            }
+            foreach (var downlink in g_moviedownlinkinfo)
+            {
+                _startXunleiDownMovie(g_moviesetinfo.downToolFileName, downlink.link, MovieSetInfo.xunlei);
+            }
+        }
+
+        private void 打开文件ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
     public class moiveInfo
     {        
@@ -450,5 +608,15 @@ namespace downMovieTool
         public string movieID;
         public string cover_y;
    
+    }
+    public class MovieSetInfo
+    {
+        public string downToolFileName;
+        public const string xunlei = "Thunder.exe";
+    }
+    public class moviedownLinkInfo
+    {
+        public string name;
+        public string link;
     }
 }
