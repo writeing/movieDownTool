@@ -104,14 +104,14 @@
             // 打开文件ToolStripMenuItem
             // 
             this.打开文件ToolStripMenuItem.Name = "打开文件ToolStripMenuItem";
-            this.打开文件ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.打开文件ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.打开文件ToolStripMenuItem.Text = "打开文件";
             this.打开文件ToolStripMenuItem.Click += new System.EventHandler(this.打开文件ToolStripMenuItem_Click);
             // 
             // 退出ToolStripMenuItem
             // 
             this.退出ToolStripMenuItem.Name = "退出ToolStripMenuItem";
-            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.退出ToolStripMenuItem.Text = "退出";
             // 
             // 操作ToolStripMenuItem
@@ -126,14 +126,14 @@
             // 设置ToolStripMenuItem
             // 
             this.设置ToolStripMenuItem.Name = "设置ToolStripMenuItem";
-            this.设置ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.设置ToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.设置ToolStripMenuItem.Text = "setDownApp";
             this.设置ToolStripMenuItem.Click += new System.EventHandler(this.设置ToolStripMenuItem_Click);
             // 
             // updateToolStripMenuItem
             // 
             this.updateToolStripMenuItem.Name = "updateToolStripMenuItem";
-            this.updateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.updateToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.updateToolStripMenuItem.Text = "update";
             this.updateToolStripMenuItem.Click += new System.EventHandler(this.updateToolStripMenuItem_Click);
             // 
@@ -503,9 +503,9 @@
             "动画",
             "纪录片",
             "短片"});
-            this.cmbDownLink.Location = new System.Drawing.Point(465, 555);
+            this.cmbDownLink.Location = new System.Drawing.Point(12, 600);
             this.cmbDownLink.Name = "cmbDownLink";
-            this.cmbDownLink.Size = new System.Drawing.Size(468, 25);
+            this.cmbDownLink.Size = new System.Drawing.Size(921, 25);
             this.cmbDownLink.TabIndex = 18;
             // 
             // button5
@@ -522,9 +522,9 @@
             // panel4
             // 
             this.panel4.Controls.Add(this.button6);
-            this.panel4.Location = new System.Drawing.Point(12, 587);
+            this.panel4.Location = new System.Drawing.Point(12, 645);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(450, 100);
+            this.panel4.Size = new System.Drawing.Size(450, 42);
             this.panel4.TabIndex = 20;
             // 
             // button6

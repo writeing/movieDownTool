@@ -22,7 +22,8 @@ namespace downMovieTool
         AutoCompleteStringCollection daoyansource = new AutoCompleteStringCollection();
         AutoCompleteStringCollection zhuyansource = new AutoCompleteStringCollection();
         AutoCompleteStringCollection dianyingsource = new AutoCompleteStringCollection();
-        List<moviedownLinkInfo> g_moviedownlinkinfo = new List<moviedownLinkInfo>();
+        List<moviedownLinkInfo> g_moviedownlinkinfo = new List<moviedownLinkInfo>();        
+        Queue<pyRunInfo> g_pyRunQue = new Queue<pyRunInfo>();
         public string g_sheetRpy = "";
         public MovieSetInfo g_moviesetinfo = new MovieSetInfo();
         formSet fs;
@@ -121,8 +122,15 @@ namespace downMovieTool
             _showListMovieImage(listsrotMovie);
         }
         private string strloadJson = "";
+        private bool beginRun = false;
         private void timer1_Tick(object sender, EventArgs e)
         {
+            if(g_pyRunQue.Count > 0 && beginRun == false)
+            {
+               pyRunInfo _temp =  g_pyRunQue.Dequeue();
+               _getMovieJsonInDouban(_temp.url, _temp.pyName);
+               beginRun = true;
+            }
             try
             {
                 if (strloadJson.IndexOf("end") > -1)
@@ -135,6 +143,7 @@ namespace downMovieTool
                 {
                     shouMessage("movie info get finish\r\n");
                     strloadJson = "";
+                    beginRun = false;
                     //initLoadJson();
                     if (g_sheetRpy.Length > 0)
                     {
@@ -231,6 +240,7 @@ namespace downMovieTool
             if (e.Data != null && e.Data == "readfinish")
             {
                 strloadJson = "readfinish";
+                Thread.Sleep(1000 * 3);
                 return;
             }//readend
             if (e.Data != null)
@@ -471,12 +481,21 @@ namespace downMovieTool
         {
             cmbDownLink.Items.Clear();
             shouMessage(g_currentMovieInfo.title);
+            pyRunInfo _temp = new pyRunInfo();
+            
+            string urltitle = System.Web.HttpUtility.UrlEncode(g_currentMovieInfo.title, Encoding.GetEncoding("gbk"));
+            _temp.url = urltitle;
+            _temp.pyName = "getMovie_dytt.py";
+            g_pyRunQue.Enqueue(_temp);
 
-            string urltitle = System.Web.HttpUtility.UrlEncode(g_currentMovieInfo.title, Encoding.GetEncoding("gbk"));           
-            _getMovieJsonInDouban(urltitle, "getMovie_dytt.py");
+
+//            _getMovieJsonInDouban(urltitle, "getMovie_dytt.py");
             //todo:对接收到的数据做拆分
-            //urltitle = System.Web.HttpUtility.UrlEncode(g_currentMovieInfo.title, Encoding.GetEncoding("utf-8"));
-            //_getMovieJsonInDouban(urltitle, "getMovie_qj.py");
+            urltitle = System.Web.HttpUtility.UrlEncode(g_currentMovieInfo.title, Encoding.GetEncoding("utf-8"));
+            _temp.url = urltitle;
+            _temp.pyName = "getMovie_qj.py";
+            g_pyRunQue.Enqueue(_temp);
+            //          _getMovieJsonInDouban(urltitle, "getMovie_qj.py");
         }
         /// <summary>
         /// 通过电影名称，查找电影
@@ -617,5 +636,10 @@ namespace downMovieTool
     {
         public string name;
         public string link;
+    }
+    public class pyRunInfo
+    {
+        public string url;
+        public string pyName;
     }
 }
